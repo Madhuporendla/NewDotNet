@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: madhupdocker-app-deployment
+  namespace: madhu
+data:
+  DB_HOST: key
+  # Add other configuration key-value pairs as needed

@@ -1,0 +1,57 @@
+Deployement 
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: madhupdocker-app-deployment
+  namespace: madhu
+  labels:
+    app: madhupdocker-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: madhupdocker-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: madhupdocker-app
+    spec:
+      initContainers:
+      - name: init-setup
+        image: busybox:latest
+        command: ['sh', '-c', 'ls; pwd; sleep 10']
+        envFrom:
+        - configMapRef:
+            name: madhupdocker-app-deployment
+      containers:
+      - name: madhupdocker-app
+        image: madhuporendla/madhupdocker-app:latest
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /_status/healthz
+            port: 5000   # Corrected port to match the containerPort
+          initialDelaySeconds: 8
+          periodSeconds: 10
+          failureThreshold: 3  # Corrected field name
+          successThreshold: 1  # Corrected field name
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 5000   # Corrected port to match the containerPort
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        env:
+        - name: madhupdocker-app-deployment
+          valueFrom:
+            configMapKeyRef:
+              key: DB_HOST
+              name: madhupdocker-app-deployment
