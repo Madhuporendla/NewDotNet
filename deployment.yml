@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: madhupdocker-app-deployment
+  name:madhudocker-app-deployment
   namespace: madhu
   labels:
-    app: madhupdocker-app
+    app: madhudocker-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: madhupdocker-app
+      app: madhudocker-app
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,20 +18,20 @@ spec:
   template:
     metadata:
       labels:
-        app: madhupdocker-app
+        app: madhudocker-app
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: envi
+                  - key: env
                     operator: In
                     values:
-                      - prod
+                      - prob
       containers:
-        - name: madhupdocker-app
-          image: madhuporendla/madhupdocker-app:latest
+        - name: madhudocker-app
+          image: manishthota25/mani:latest
           ports:
             - containerPort: 5000
           livenessProbe:
@@ -49,8 +49,9 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 5
           env:
-            - name: DB_HOST
+            - name: madhudocker-app-deployment
               valueFrom:
                 configMapKeyRef:
-                  name: madhupdocker-app-deployment
+                  name: madhudocker-app-deployment
                   key: DB_HOST
+      
